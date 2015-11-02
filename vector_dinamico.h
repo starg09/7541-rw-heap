@@ -38,7 +38,7 @@ bool vector_redimensionar(vector_t* vector, size_t nuevo_tam);
 // Pre: el vector fue creado
 // Post: se almacenó en valor el dato en la posición pos. Devuelve false si la
 // posición es inválida (fuera del rango del vector, que va de 0 a tamaño-1)
-bool vector_obtener(vector_t* vector, size_t pos, void* valor);
+bool vector_obtener(vector_t* vector, size_t pos, void* *valor);
 
 // Almacena el valor en la posición pos
 // Pre: el vector fue creado

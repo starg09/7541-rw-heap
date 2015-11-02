@@ -14,13 +14,13 @@ void vector_destruir(vector_t* vector){
 
 // Si la posición no es válida, devuelve false. De lo contrario, guarda el valor
 // ubicado en esa posición del vector en la variable “valor”, y devuelve true.
-bool vector_obtener(vector_t* vector, size_t pos, void* valor){
+bool vector_obtener(vector_t* vector, size_t pos, void** valor){
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wtype-limits"
     if (( pos < 0 ) || (pos >= vector->tam))
         return false;
     #pragma GCC diagnostic pop
-    valor = vector->datos[pos];
+    *valor = vector->datos[pos];
     return true;
 }
 
@@ -60,8 +60,8 @@ vector_t* vector_crear(size_t tam) {
 }
 
 bool vector_redimensionar(vector_t* vector, size_t tam_nuevo) {
-    void* datos_nuevo = realloc(vector->datos, tam_nuevo * sizeof(void*));
-
+    void** datos_nuevo = realloc(vector->datos, tam_nuevo * sizeof(void*));
+    
     // Cuando tam_nuevo es 0, es correcto si se devuelve NULL.
     // En toda otra situación significa que falló el realloc.
     if (tam_nuevo > 0 && datos_nuevo == NULL) {
