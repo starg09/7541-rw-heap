@@ -88,6 +88,7 @@ heap_t *heap_crear(cmp_func_t cmp) {
 	}
 	vector_t* vector = vector_crear(LARGO_INICIAL);
 	if (!vector) {
+		free(heap);
 		return NULL;
 	}
 	heap->vector = vector;
