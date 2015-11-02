@@ -3,10 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* LARGO INICIAL DEL HEAP */
+/* LARGO INICIAL DEL HEAP, FACTORES DE OCUPACION Y REDIMENSIONAMIENTO */
 #define LARGO_INICIAL 20;
+#define FACTOR_REDIMENSIONAMIENTO 2;
+#define FACTOR_DE_OCUPACION 80;
+#define FACTOR_DE_DESOCUPACION 25;
 
-/* DEFINICION DE ESTRUCTURAS */
+/* DEFINICION DE LA ESTRUCTURA */
 struct heap {
 	vector_t* vector;
 	cmp_func_t* cmp;
@@ -60,7 +63,13 @@ void *heap_ver_max(const heap_t *heap) {
 	return vector_obtener(heap->vector, 0, elemento_temp) ? elemento_temp : NULL;
 }
 
-void *heap_desencolar(heap_t *heap);
+void *heap_desencolar(heap_t *heap) {
+	void* maximo = heap_ver_max(heap);
+	heap->vector[0] = heap->vector[heap_cantidad(heap)];
+	heap->elem--;
+	downheap(heap->vector, heap->elem, 0, cmp);
+	return maximo;
+}
 
 void downheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cmp) {
 	if (pos_actual >= cant_elem) {
