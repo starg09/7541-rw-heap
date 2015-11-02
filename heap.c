@@ -1,5 +1,6 @@
 #include "heap.h"
 #include "vector_dinamico.h"
+#include "stdio.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -39,10 +40,10 @@ void downheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t 
 	size_t pos_hijo_izq = pos_actual*2 + 1;
 	size_t pos_hijo_der = pos_actual*2 + 2;
 	size_t pos_mayor = pos_actual;
-	void* dato_temp1 = NULL;
-	void* dato_temp2 = NULL;
-	void* dato_temp3 = NULL;
-	if (vector_obtener(vector, pos_actual, dato_temp1) && vector_obtener(vector, pos_hijo_izq, dato_temp2) && vector_obtener(vector, pos_hijo_der, dato_temp3)) {
+	void* dato_temp1;
+	void* dato_temp2;
+	void* dato_temp3;
+	if (vector_obtener(vector, pos_actual, &dato_temp1) && vector_obtener(vector, pos_hijo_izq, &dato_temp2) && vector_obtener(vector, pos_hijo_der, &dato_temp3)) {
 		if ((pos_hijo_izq < cant_elem) && (cmp(dato_temp1,dato_temp2) < 0)) {
 		 	pos_mayor = pos_hijo_izq;
 		}
@@ -61,9 +62,9 @@ void upheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cm
 		return;
 	}
 	size_t pos_padre = (pos_actual - 1)/2;
-	void* dato_temp1 = NULL;
-	void* dato_temp2 = NULL;
-	if (vector_obtener(vector, pos_actual, dato_temp1) && vector_obtener(vector, pos_padre, dato_temp2)) {
+	void* dato_temp1;
+	void* dato_temp2;
+	if ((vector_obtener(vector, pos_actual, &dato_temp1) == true) && (vector_obtener(vector, pos_padre, &dato_temp2) == true)) {
 		if (cmp(dato_temp1,dato_temp2) > 0 ) { 
 			swap(vector, pos_actual, pos_padre); 
 			upheap(vector, cant_elem, pos_padre, cmp);
@@ -121,7 +122,7 @@ bool heap_encolar(heap_t *heap, void *elem) {
 		if ((heap_cantidad(heap) >= vector_obtener_tamanio(heap->vector)*FACTOR_DE_OCUPACION/100)) {
 				vector_redimensionar(heap->vector, vector_obtener_tamanio(heap->vector)*FACTOR_REDIMENSIONAMIENTO);
 		}
-		upheap(heap->vector, heap->elem, heap->elem, heap->cmp);
+		upheap(heap->vector, heap->elem, heap->elem -1, heap->cmp);
     	return true;
     }
     return false;
