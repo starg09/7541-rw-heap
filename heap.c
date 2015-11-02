@@ -62,32 +62,47 @@ void *heap_ver_max(const heap_t *heap) {
 
 void *heap_desencolar(heap_t *heap);
 
-void downheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cmp);
-/* PSEUDOCODIGO (A IMPLEMENTAR):
-	if pos_actual >= cant_elem: return
-	pos_hijo_izq = pos_actual*2 + 1
-	pos_hijo_der = pos_actual*2 + 2
-	pos_mayor = pos_actual
-	if pos_hijo_izq < cant_elem and heap[pos_actual] < heap[pos_hijo_izq]: pos_mayor = pos_hijo_izq
-	if pos_hijo_der < cant_elem and heap[pos_actual] < heap[pos_hijo_der]: pos_mayor = pos_hijo_der
-	if pos_mayor != pos_actual: swap(heap, pos_actual, pos_mayor) downheap(heap, cant_elem, pos_mayor)
-*/
+void downheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cmp) {
+	if (pos_actual >= cant_elem) {
+		return;
+	}
+	size_t pos_hijo_izq = pos_actual*2 + 1;
+	size_t pos_hijo_der = pos_actual*2 + 2;
+	size_t pos_mayor = pos_actual;
+	if (cmp(pos_hijo_izq, cant_elem) < 0) && (cmp(vector[pos_actual],vector[pos_hijo_izq]) < 0) {
+	 	pos_mayor = pos_hijo_izq;
+	}
+	if (cmp(pos_hijo_der, cant_elem) < 0) && (cmp(vector[pos_actual],vector[pos_hijo_der]) < 0) {
+	 	pos_mayor = pos_hijo_der;
+	}
+	if (pos_mayor != pos_actual) {
+		swap(vector, pos_actual, pos_mayor);
+	 	downheap(vector, cant_elem, pos_mayor);
+	}
+}
 
-void upheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cmp);
-/* PSEUDOCODIGO (A IMPLEMENTAR):
-	if pos_actual == 0: return
-	pos_padre = (pos_actual - 1)/2
-	if heap[pos_actual] > heap[pos_padre]: swap(heap, pos_actual, pos_padre) upheap(heap, cant_elem, pos_padre)
-*/
+void upheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cmp){
+	if (pos_actual == 0) {
+		return;
+	}
+	size_t pos_padre = (pos_actual - 1)/2;
+	if (cmp(heap[pos_actual],heap[pos_padre]) > 0 ) { 
+		swap(vector, pos_actual, pos_padre); 
+		upheap(vector, cant_elem, pos_padre, cmp);
+	}
+}
 
-void heapify(vector_t* vector, size_t cant_elem, cmp_func_t cmp);		
-/* PSEUDOCODIGO (A IMPLEMENTAR):
-	for i = (cant_elem/2 - 1) to 0: downheap(heap, cant_elem, i, cmp)
-*/
 
-void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp);
-/* PSEUDOCODIGO (A IMPLEMENTAR):
-	heapify(elementos[], cant, cmp)
-	for i = cant-1 to 0: swap(elementos[], 0, i) downheap(elementos[], i, 0)
-*/
-	
+void heapify(vector_t* vector, size_t cant_elem, cmp_func_t cmp) {
+	for (size_t i = (cant_elem/2 - 1); i >= 0; i--) {
+		downheap(vector, cant_elem, i, cmp);
+	}
+}
+
+void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
+	heapify(elementos[], cant, cmp);
+	for (size_t i = cant-1; i >= 0; i--) {
+		swap(elementos[], 0, i);
+		downheap(elementos[], i, 0, cmp);
+	}
+}
