@@ -26,10 +26,10 @@ struct heap {
 void swap(vector_t* vector, size_t pos_uno, size_t pos_dos) {
 	void* dato_aux_1 = NULL;
 	void* dato_aux_2 = NULL;
-	vector_obtener(vector, pos_uno, dato_aux_1);
-	vector_obtener(vector, pos_dos, dato_aux_2);
-	vector_guardar(vector, pos_uno, dato_aux_2);
-	vector_guardar(vector, pos_dos, dato_aux_1);
+	vector_obtener(vector, pos_uno, &dato_aux_1);
+	vector_obtener(vector, pos_dos, &dato_aux_2);
+	vector_guardar(vector, pos_uno, &dato_aux_2);
+	vector_guardar(vector, pos_dos, &dato_aux_1);
 
 }
 
@@ -62,9 +62,11 @@ void upheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cm
 		return;
 	}
 	size_t pos_padre = (pos_actual - 1)/2;
-	void* dato_temp1;
-	void* dato_temp2;
-	if ((vector_obtener(vector, pos_actual, &dato_temp1) == true) && (vector_obtener(vector, pos_padre, &dato_temp2) == true)) {
+	void* dato_temp1 = NULL;
+	void* dato_temp2 = NULL;
+	vector_obtener(vector, pos_actual, &dato_temp1);
+	vector_obtener(vector, pos_padre, &dato_temp2);
+	if (dato_temp1 && dato_temp2) {
 		if (cmp(dato_temp1,dato_temp2) > 0 ) { 
 			swap(vector, pos_actual, pos_padre); 
 			upheap(vector, cant_elem, pos_padre, cmp);
@@ -118,7 +120,11 @@ bool heap_esta_vacio(const heap_t *heap) {
 }
 
 bool heap_encolar(heap_t *heap, void *elem) {
-	if(vector_guardar(heap->vector, heap->elem +1, elem)) {
+	if (heap_esta_vacio(heap)){
+		heap->elem++;
+		return vector_guardar((heap->vector), 0, elem);
+	}
+	if(vector_guardar(heap->vector, heap->elem, elem)) {
 		heap->elem++;
 		if ((heap_cantidad(heap) >= vector_obtener_tamanio(heap->vector)*FACTOR_DE_OCUPACION/100)) {
 				vector_redimensionar(heap->vector, vector_obtener_tamanio(heap->vector)*FACTOR_REDIMENSIONAMIENTO);
@@ -131,17 +137,22 @@ bool heap_encolar(heap_t *heap, void *elem) {
 
 
 void *heap_ver_max(const heap_t *heap) {
+	if (heap_esta_vacio(heap))
+		return NULL;
 	void* elemento_temp = NULL;
-	return vector_obtener(heap->vector, 0, elemento_temp) ? elemento_temp : NULL;
+	vector_obtener(heap->vector, 0, &elemento_temp);
+	return elemento_temp;
 }
 
 void *heap_desencolar(heap_t *heap) {
 	if(!heap_esta_vacio(heap)) {
 		void* maximo = heap_ver_max(heap);
-		heap->vector[0] = heap->vector[heap_cantidad(heap)];
+		void* nuevo_tope = NULL;
+		vector_obtener(heap->vector, heap_cantidad(heap)-1, &nuevo_tope);
+		vector_guardar(heap->vector, 0, nuevo_tope);
 		heap->elem--;
 		if ((heap_cantidad(heap) <= vector_obtener_tamanio(heap->vector)*FACTOR_DE_DESOCUPACION/100) && (vector_obtener_tamanio(heap->vector) > LARGO_INICIAL)) {
-			vector_redimensionar(heap->vector, vector_obtener_tamanio(heap->vector)/FACTOR_REDIMENSIONAMIENTO);
+			vector_redimensionar(heap->vector, vector_obtener_tamanio(heap->vector)/FACTOR_REDIMENSIONAMIENTO);	
 		}
 		downheap(heap->vector, heap->elem, 0, heap->cmp);
 		return maximo;

@@ -9,10 +9,10 @@
 
 #define LONGITUD_ARRAY_PRUEBA 25
 
-int cmp(const void* a, const void* b) {
+int comp_ints(const void* a, const void* b) {
 	int* a_temp = (int*)a;
 	int* b_temp = (int*)b;
-	return (*a_temp - *b_temp);
+	return (*a_temp) - (*b_temp);
 }
 
 /*void inicializar_vector(int *vector_pruebas) {
@@ -37,14 +37,31 @@ void pruebas_heap_alumno(void){
 	int t5 = 0;
 	//int vector_pruebas[LONGITUD_ARRAY_PRUEBA];
 	/* HEAP VACIO */
-	heap_t* heap = heap_crear(cmp);
+	heap_t* heap = heap_crear(comp_ints);
 	print_test("El heap fue creado, y no es NULL", (heap != NULL));
 	print_test("Desencolar es NULL", heap_desencolar(heap) == NULL);
 	print_test("El heap esta vacio", heap_esta_vacio(heap));
 	print_test("El maximo del heap es NULL", heap_ver_max(heap) == NULL);
 	heap_destruir(heap, NULL);
+	/* HEAP DE A UN ELEMENTO */
+	heap = heap_crear(comp_ints);
+	print_test("El heap fue creado, y no es NULL", (heap != NULL));
+	print_test("Desencolar es NULL", heap_desencolar(heap) == NULL);
+	print_test("El heap esta vacio", heap_esta_vacio(heap));
+	print_test("El maximo del heap es NULL", heap_ver_max(heap) == NULL);
+	print_test("Encolar 5 es true", heap_encolar(heap, &t1) == true);
+	print_test("El maximo del heap es 5", heap_ver_max(heap) == &t1);
+	print_test("Desencolar devuelve 5", heap_desencolar(heap) == &t1);
+	print_test("Encolar 8 es true", heap_encolar(heap, &t2));
+	print_test("El maximo del heap es 2", heap_ver_max(heap) == &t2);
+	print_test("Encolar 2 es true", heap_encolar(heap, &t3));
+	print_test("El maximo del heap es 8", heap_ver_max(heap) == &t2);
+	print_test("Desencolar devuelve 8", heap_desencolar(heap) == &t2);
+	print_test("El maximo del heap es 2", heap_ver_max(heap) == &t3);
+	print_test("Desencolar devuelve 2", heap_desencolar(heap) == &t3);
+	heap_destruir(heap, NULL);
 	/* HEAP POCOS ELEMENTOS */
-	heap = heap_crear(cmp);
+	heap = heap_crear(comp_ints);
 	print_test("El heap fue creado, y no es NULL", (heap != NULL));
 	print_test("Desencolar es NULL", heap_desencolar(heap) == NULL);
 	print_test("El heap esta vacio", heap_esta_vacio(heap));
@@ -59,7 +76,7 @@ void pruebas_heap_alumno(void){
 	/* HEAPSORT */
 		/*inicializar_vector(vector_pruebas);
 	imprimir_vector_pruebas(vector_pruebas);
-	heap_sort(vector_pruebas, LONGITUD_ARRAY_PRUEBA, cmp);
+	heap_sort(vector_pruebas, LONGITUD_ARRAY_PRUEBA, comp_ints);
 	imprimir_vector_pruebas(vector_pruebas);*/
 
 }
