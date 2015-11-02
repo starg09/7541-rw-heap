@@ -64,11 +64,17 @@ void *heap_ver_max(const heap_t *heap) {
 }
 
 void *heap_desencolar(heap_t *heap) {
-	void* maximo = heap_ver_max(heap);
-	heap->vector[0] = heap->vector[heap_cantidad(heap)];
-	heap->elem--;
-	downheap(heap->vector, heap->elem, 0, cmp);
-	return maximo;
+	if(!heap_esta_vacio(heap)) {
+		void* maximo = heap_ver_max(heap);
+		heap->vector[0] = heap->vector[heap_cantidad(heap)];
+		heap->elem--;
+		if ((heap_cantidad(heap) <= vector_obtener_tamanio(heap->vector)*FACTOR_DE_DESOCUPACION/100) && (vector_obtener_tamanio(heap->vector) > LARGO_INICIAL)) {
+			vector_redimensionar(heap->vector, vector_obtener_tamanio(heap->vector)/FACTOR_REDIMENSIONAMIENTO);
+		}
+		downheap(heap->vector, heap->elem, 0, cmp);
+		return maximo;
+	}
+	return NULL;
 }
 
 void downheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cmp) {
