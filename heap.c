@@ -40,15 +40,20 @@ void downheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t 
 	size_t pos_hijo_izq = pos_actual*2 + 1;
 	size_t pos_hijo_der = pos_actual*2 + 2;
 	size_t pos_mayor = pos_actual;
-	void* dato_temp1;
-	void* dato_temp2;
-	void* dato_temp3;
+	void* dato_temp1 = NULL;
+	void* dato_temp2 = NULL;
+	void* dato_temp3 = NULL;
+	int comparacion = 0;
 	if (vector_obtener(vector, pos_actual, &dato_temp1) && vector_obtener(vector, pos_hijo_izq, &dato_temp2) && vector_obtener(vector, pos_hijo_der, &dato_temp3)) {
-		if ((pos_hijo_izq < cant_elem) && (cmp(dato_temp1,dato_temp2) < 0)) {
-		 	pos_mayor = pos_hijo_izq;
+		if (pos_hijo_izq < cant_elem) {
+			comparacion = cmp(dato_temp1,dato_temp2);
+		 	if (comparacion < 0)
+		 		pos_mayor = pos_hijo_izq;
 		}
-		if ((pos_hijo_der < cant_elem) && (cmp(dato_temp1,dato_temp3) < 0)) {
-	 		pos_mayor = pos_hijo_der;
+		if (pos_hijo_der < cant_elem) {
+	 		comparacion = cmp(dato_temp1,dato_temp3);
+		 	if (comparacion < 0)
+		 		pos_mayor = pos_hijo_der;
 		}
 		if (pos_mayor != pos_actual) {
 			swap(vector, pos_actual, pos_mayor);
@@ -64,10 +69,12 @@ void upheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cm
 	size_t pos_padre = (pos_actual - 1)/2;
 	void* dato_temp1 = NULL;
 	void* dato_temp2 = NULL;
+	int comparacion = 0;
 	vector_obtener(vector, pos_actual, &dato_temp1);
 	vector_obtener(vector, pos_padre, &dato_temp2);
 	if (dato_temp1 && dato_temp2) {
-		if (cmp(dato_temp1,dato_temp2) > 0 ) { 
+		comparacion = cmp(dato_temp1, dato_temp2);
+		if (comparacion > 0 ) { 
 			swap(vector, pos_actual, pos_padre); 
 			upheap(vector, cant_elem, pos_padre, cmp);
 		}
@@ -84,6 +91,8 @@ void heapify(vector_t* vector, size_t cant_elem, cmp_func_t cmp) {
 /* DEFINICION DE PRIMITIVAS */
 
 heap_t *heap_crear(cmp_func_t cmp) {
+	if (cmp == NULL)
+		return NULL;
 	heap_t* heap = malloc(sizeof(heap_t));
 	if (!heap) {
 		return NULL;
