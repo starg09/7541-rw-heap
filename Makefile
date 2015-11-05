@@ -9,6 +9,12 @@ zip:
 	rm -f ./Heap\ -\ 98373\ -\ Bianchi\ -\ 96251\ -\ Queirolo\ Dominguez.zip
 	zip ./Heap\ -\ 98373\ -\ Bianchi\ -\ 96251\ -\ Queirolo\ Dominguez.zip *.c *.h Makefile
 
+vtest:
+	valgrind --leak-check=full --track-origins=yes ./correr_pruebas
+
+test:
+	./correr_pruebas
+
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c $<
 
