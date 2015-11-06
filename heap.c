@@ -83,7 +83,7 @@ void upheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cm
 
 
 void heapify(vector_t* vector, size_t cant_elem, cmp_func_t cmp) {
-	for (size_t i = (cant_elem/2 - 1); i > 0; i--) {
+	for (size_t i = (cant_elem/2) - 1; i > 0; i--) {
 		downheap(vector, cant_elem, i, cmp);
 	}
 }
@@ -170,9 +170,23 @@ void *heap_desencolar(heap_t *heap) {
 }
 
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
-	heapify((vector_t*)*elementos, cant, cmp);
+	vector_t* vector = vector_crear(cant);
+	if (vector == NULL)
+		return;
+	void** c = elementos;
+	for (size_t i = 0; i < cant; i++){
+		vector_guardar(vector, i, (c++));
+	}
+	heapify(vector, cant, cmp);
 	for (size_t i = cant-1; i > 0; i--) {
 		swap((vector_t*)*elementos, 0, i);
 		downheap((vector_t*)*elementos, i, 0, cmp);
 	}
+
+	c = elementos;
+	for (size_t i = 0; i < cant; i++){
+		vector_obtener(vector, i, (c++));
+	}
+
+	vector_destruir(vector);
 }

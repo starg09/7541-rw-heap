@@ -15,6 +15,20 @@ int comp_ints(const void* a, const void* b) {
 	return (*a_temp) - (*b_temp);
 }
 
+bool prueba_heapsort_agregar_mayor_masivo(size_t elementos){
+	int* listaints = malloc( sizeof(int) * elementos );
+	if (listaints == NULL)
+		return false;
+	size_t i = 0;
+	for (int* c = listaints; ( c - listaints ) < elementos; c++){
+		(*c) = (int)i;
+		printf("%d = %d | ", (int)(c-listaints), (int)*c);
+	}
+	heap_sort((void**)listaints, elementos, comp_ints);
+	free (listaints);
+	return true;
+}
+
 /*void inicializar_vector(int *vector_pruebas) {
 	srand((unsigned) time(NULL));
 	for (size_t i=0; i<LONGITUD_ARRAY_PRUEBA; i++) {
@@ -74,9 +88,10 @@ void pruebas_heap_alumno(void){
 	heap_destruir(heap, NULL);
 	/* HEAP MUCHOS ELEMENTOS */
 	/* HEAPSORT */
-		/*inicializar_vector(vector_pruebas);
+	prueba_heapsort_agregar_mayor_masivo(250);
+	/*inicializar_vector(vector_pruebas);
 	imprimir_vector_pruebas(vector_pruebas);
-	heap_sort(vector_pruebas, LONGITUD_ARRAY_PRUEBA, comp_ints);
+	heap_sort((void**)vector_pruebas, LONGITUD_ARRAY_PRUEBA, comp_ints);
 	imprimir_vector_pruebas(vector_pruebas);*/
 
 }
