@@ -28,8 +28,8 @@ void swap(vector_t* vector, size_t pos_uno, size_t pos_dos) {
 	void* dato_aux_2 = NULL;
 	vector_obtener(vector, pos_uno, &dato_aux_1);
 	vector_obtener(vector, pos_dos, &dato_aux_2);
-	vector_guardar(vector, pos_uno, &dato_aux_2);
-	vector_guardar(vector, pos_dos, &dato_aux_1);
+	vector_guardar(vector, pos_uno, dato_aux_2);
+	vector_guardar(vector, pos_dos, dato_aux_1);
 
 }
 
