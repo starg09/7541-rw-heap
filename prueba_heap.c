@@ -16,16 +16,22 @@ int comp_ints(const void* a, const void* b) {
 }
 
 bool prueba_heapsort_agregar_mayor_masivo(size_t elementos){
-	int* listaints = malloc( sizeof(int) * elementos );
-	if (listaints == NULL)
+	int* lista  = malloc( sizeof(int) * elementos );
+	if (lista == NULL)
 		return false;
-	size_t i = 0;
-	for (int* c = listaints; ( c - listaints ) < elementos; c++){
-		(*c) = (int)i;
-		printf("%d = %d | ", (int)(c-listaints), (int)*c);
+	
+	int* lista_a_procesar[elementos];
+	
+	int* c = lista;
+	for (int i = 0; i < elementos; i++){
+		*c = i;
+		//printf("%d = %d | ", (int)(c-lista), (int)*c);
+		lista_a_procesar[i] = c;
+		c++;
 	}
-	heap_sort((void**)listaints, elementos, comp_ints);
-	free (listaints);
+
+	heap_sort((void**)lista_a_procesar, elementos, comp_ints);
+	free (lista);
 	return true;
 }
 

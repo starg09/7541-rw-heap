@@ -169,23 +169,55 @@ void *heap_desencolar(heap_t *heap) {
 	return NULL;
 }
 
+/*void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
+	vector_t* vector = vector_crear(cant);
+	if (vector == NULL)
+		return;
+	void** c = elementos;
+	for (size_t i = 0; i < cant; i++){
+		vector_guardar(vector, i, c);
+		c++;
+	}
+
+	heapify(vector, cant, cmp);
+
+	for (size_t i = cant-1; i > 0; i--) {
+		swap(vector, 0, i);
+		downheap(vector, i, 0, cmp);
+	}
+
+	c = realloc(elementos);
+
+	for (size_t i = 0; i < cant; i++){
+		int* temp_punt = NULL;
+		vector_obtener(vector, i, &temp_punt);
+		*c = *temp_punt;
+		c++;
+	}
+
+	vector_destruir(vector);
+}*/
+
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
 	vector_t* vector = vector_crear(cant);
 	if (vector == NULL)
 		return;
 	void** c = elementos;
 	for (size_t i = 0; i < cant; i++){
-		vector_guardar(vector, i, (c++));
-	}
-	heapify(vector, cant, cmp);
-	for (size_t i = cant-1; i > 0; i--) {
-		swap((vector_t*)*elementos, 0, i);
-		downheap((vector_t*)*elementos, i, 0, cmp);
+		vector_guardar(vector, i, c[i]);
 	}
 
-	c = elementos;
+	heapify(vector, cant, cmp);
+
+	for (size_t i = cant-1; i > 0; i--) {
+		swap(vector, 0, i);
+		downheap(vector, i, 0, cmp);
+	}
+
 	for (size_t i = 0; i < cant; i++){
-		vector_obtener(vector, i, (c++));
+		void* temp_punt = NULL;
+		vector_obtener(vector, i, &temp_punt);
+		elementos[i] = temp_punt;
 	}
 
 	vector_destruir(vector);
