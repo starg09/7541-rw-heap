@@ -35,6 +35,61 @@ bool prueba_heapsort_agregar_mayor_masivo(size_t elementos){
 	return true;
 }
 
+bool heap_encolar_masivo(heap_t* heap, size_t elem){
+	int* lista  = malloc( sizeof(int) * elem );
+	if (lista == NULL)
+		return false;
+	int* c = lista;
+	for (int i = 0; i < elem; i++){
+		*c = i;
+		if ( !heap_encolar(heap, c) ){	
+			free(lista);
+			return false;
+		}
+		c++;
+	}
+	return true;
+}
+
+bool heap_desencolar_masivo(heap_t* heap, size_t elem){
+	int* lista  = malloc( sizeof(int) * elem );
+	if (lista == NULL)
+		return false;
+	int* elems_extraidos = malloc( sizeof(int) * elem );
+	if (lista == NULL){
+		free(lista);
+		return false;
+	}
+	int* c = elems_extraidos;
+	int* dato_temp = NULL;
+	for (int i = 0; i < elem; i++){
+		dato_temp = (int*)heap_desencolar(heap);
+		if ( dato_temp == NULL){
+			free(c);
+			free(lista);
+			return false;
+		}
+		*c = *(dato_temp);
+		free(dato_temp);
+		c++;
+	}
+	bool ok = true;
+	int* c1 = lista;
+	int* c2 = elems_extraidos + (elem-1);
+	for (size_t i = 0; i < elem; i++){
+		if (*c1 != *c2){
+			printf("%d vs %d \n", *c1, *c2);
+			ok = false;
+			free(lista);
+			break;
+		}
+		c1++;
+		c2--;
+	}
+	free(lista);
+	return ok;
+}
+
 /*void inicializar_vector(int *vector_pruebas) {
 	srand((unsigned) time(NULL));
 	for (size_t i=0; i<LONGITUD_ARRAY_PRUEBA; i++) {
@@ -99,5 +154,8 @@ void pruebas_heap_alumno(void){
 	imprimir_vector_pruebas(vector_pruebas);
 	heap_sort((void**)vector_pruebas, LONGITUD_ARRAY_PRUEBA, comp_ints);
 	imprimir_vector_pruebas(vector_pruebas);*/
-
+	heap = heap_crear(comp_ints);
+	print_test("Encolar mayor masivamente", heap_encolar_masivo(heap, 250));
+	print_test("desencolar mayor masivamente", heap_desencolar_masivo(heap, 250));
+	heap_destruir(heap, NULL);
 }
