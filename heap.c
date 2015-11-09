@@ -21,7 +21,7 @@ struct heap {
 /* Siendo j la posicion actual, la posicion del padre es de la forma (j - 1)/2 */
 /* Siendo i el padre, el hijo izquierdo es de la forma 2*i + 1, y el hijo derecho de la forma 2*i + 2 */
 
-/* FUNCIONES AUXILIARES */
+/* FUNCIONES AUXILIARES PARA EL HEAP COMO TDA */
 
 void swap(vector_t* vector, size_t pos_uno, size_t pos_dos) {
 	void* dato_aux_1 = NULL;
@@ -34,49 +34,54 @@ void swap(vector_t* vector, size_t pos_uno, size_t pos_dos) {
 }
 
 void downheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cmp) {
-	if (pos_actual >= cant_elem) {
+	if (pos_actual > cant_elem) {
 		return;
 	}
 	size_t pos_hijo_izq = pos_actual*2 + 1;
 	size_t pos_hijo_der = pos_actual*2 + 2;
-	size_t pos_mayor = pos_actual;
+	size_t pos_mayor;
 	void* dato_temp1 = NULL;
 	void* dato_temp2 = NULL;
 	void* dato_temp3 = NULL;
-	int comparacion = 0;
 	if (vector_obtener(vector, pos_actual, &dato_temp1) && vector_obtener(vector, pos_hijo_izq, &dato_temp2) && vector_obtener(vector, pos_hijo_der, &dato_temp3)) {
-		if (pos_hijo_izq < cant_elem) {
-			comparacion = cmp(dato_temp1,dato_temp2);
-		 	if (comparacion < 0)
-		 		pos_mayor = pos_hijo_izq;
+		if ((pos_hijo_izq < cant_elem) && (cmp(dato_temp1,dato_temp2) < 0)) {
+	 		pos_mayor = pos_hijo_izq;
 		}
-		if (pos_hijo_der < cant_elem) {
-	 		comparacion = cmp(dato_temp1,dato_temp3);
-		 	if (comparacion < 0)
+		else {
+			pos_mayor = pos_actual;
+		}
+		if (pos_mayor == pos_actual) {
+			if ((pos_hijo_der < cant_elem) && (cmp(dato_temp1,dato_temp3) < 0)) {
 		 		pos_mayor = pos_hijo_der;
+			}
+		}
+		else {
+			if ((pos_hijo_der < cant_elem) && (cmp(dato_temp2,dato_temp3) < 0)) {
+		 		pos_mayor = pos_hijo_der;
+			}
 		}
 		if (pos_mayor != pos_actual) {
 			swap(vector, pos_actual, pos_mayor);
-	 		downheap(vector, cant_elem, pos_mayor, cmp);
+			downheap(vector, cant_elem, pos_mayor, cmp);
 		}
-	}
+	}	
 }
 
 void upheap(vector_t* vector, size_t cant_elem, size_t pos_actual, cmp_func_t cmp){
-	if (pos_actual == 0) {
-		return;
-	}
-	size_t pos_padre = (pos_actual - 1)/2;
+	size_t pos_padre = (pos_actual-1)/2;
 	void* dato_temp1 = NULL;
 	void* dato_temp2 = NULL;
-	int comparacion = 0;
+	int comparacion;
 	vector_obtener(vector, pos_actual, &dato_temp1);
 	vector_obtener(vector, pos_padre, &dato_temp2);
 	if (dato_temp1 && dato_temp2) {
 		comparacion = cmp(dato_temp1, dato_temp2);
-		if (comparacion > 0 ) { 
+		if (comparacion > 0) { 
 			swap(vector, pos_actual, pos_padre); 
 			upheap(vector, cant_elem, pos_padre, cmp);
+		}
+		else if (comparacion == 0) {
+			vector_guardar(vector, pos_actual, NULL);
 		}
 	}
 }
@@ -130,7 +135,7 @@ bool heap_esta_vacio(const heap_t *heap) {
 
 bool heap_encolar(heap_t *heap, void *elem) {
 	if (heap_esta_vacio(heap)){
-		heap->elem++;
+		heap->elem = 1;
 		return vector_guardar((heap->vector), 0, elem);
 	}
 	if(vector_guardar(heap->vector, heap->elem, elem)) {
@@ -138,7 +143,7 @@ bool heap_encolar(heap_t *heap, void *elem) {
 		if ((heap_cantidad(heap) >= vector_obtener_tamanio(heap->vector)*FACTOR_DE_OCUPACION/100)) {
 				vector_redimensionar(heap->vector, vector_obtener_tamanio(heap->vector)*FACTOR_REDIMENSIONAMIENTO);
 		}
-		upheap(heap->vector, heap->elem, heap->elem -1, heap->cmp);
+		upheap(heap->vector, heap->elem, heap->elem-1, heap->cmp);
     	return true;
     }
     return false;
@@ -157,68 +162,69 @@ void *heap_desencolar(heap_t *heap) {
 	if(!heap_esta_vacio(heap)) {
 		void* maximo = heap_ver_max(heap);
 		void* nuevo_tope = NULL;
-		vector_obtener(heap->vector, heap_cantidad(heap)-1, &nuevo_tope);
-		vector_guardar(heap->vector, 0, nuevo_tope);
-		heap->elem--;
-		if ((heap_cantidad(heap) <= vector_obtener_tamanio(heap->vector)*FACTOR_DE_DESOCUPACION/100) && (vector_obtener_tamanio(heap->vector) > LARGO_INICIAL)) {
-			vector_redimensionar(heap->vector, vector_obtener_tamanio(heap->vector)/FACTOR_REDIMENSIONAMIENTO);	
+		if(vector_obtener(heap->vector, heap_cantidad(heap)-1, &nuevo_tope) && vector_guardar(heap->vector, 0, nuevo_tope)) {
+			if ((heap_cantidad(heap) <= vector_obtener_tamanio(heap->vector)*FACTOR_DE_DESOCUPACION/100) && (vector_obtener_tamanio(heap->vector) > LARGO_INICIAL)) {
+				vector_redimensionar(heap->vector, vector_obtener_tamanio(heap->vector)/FACTOR_REDIMENSIONAMIENTO);	
+			}
+			heap->elem--;
+			downheap(heap->vector, heap->elem, 0, heap->cmp);
+			return maximo;
 		}
-		downheap(heap->vector, heap->elem, 0, heap->cmp);
-		return maximo;
 	}
 	return NULL;
 }
 
-/*void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
-	vector_t* vector = vector_crear(cant);
-	if (vector == NULL)
+/* HEAPSORT + FUNCIONES AUXILIARES HEAPSORT */
+void swap_heapsort(void* vector[], size_t pos_uno, size_t pos_dos) {
+	void* dato_aux = NULL;
+	dato_aux = vector[pos_uno];
+	vector[pos_uno] = vector[pos_dos];
+	vector[pos_dos] = dato_aux;
+}
+
+void downheap_heapsort(void* vector[], size_t cant_elem, size_t pos_actual, cmp_func_t cmp) {
+	if (pos_actual > cant_elem) {
 		return;
-	void** c = elementos;
-	for (size_t i = 0; i < cant; i++){
-		vector_guardar(vector, i, c);
-		c++;
 	}
-
-	heapify(vector, cant, cmp);
-
-	for (size_t i = cant-1; i > 0; i--) {
-		swap(vector, 0, i);
-		downheap(vector, i, 0, cmp);
+	size_t pos_hijo_izq = pos_actual*2 + 1;
+	size_t pos_hijo_der = pos_actual*2 + 2;
+	size_t pos_mayor;
+	if ((pos_hijo_izq < cant_elem) && (cmp(vector[pos_actual],vector[pos_hijo_izq]) < 0)) {
+		pos_mayor = pos_hijo_izq;
 	}
-
-	c = realloc(elementos);
-
-	for (size_t i = 0; i < cant; i++){
-		int* temp_punt = NULL;
-		vector_obtener(vector, i, &temp_punt);
-		*c = *temp_punt;
-		c++;
+	else {
+		pos_mayor = pos_actual;
 	}
-
-	vector_destruir(vector);
-}*/
-
-void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
-	vector_t* vector = vector_crear(cant);
-	if (vector == NULL)
-		return;
-	void** c = elementos;
-	for (size_t i = 0; i < cant; i++){
-		vector_guardar(vector, i, c[i]);
+	if (pos_mayor == pos_actual) {
+			if ((pos_hijo_der < cant_elem) && (cmp(vector[pos_actual],vector[pos_hijo_der]) < 0)) {
+		 		pos_mayor = pos_hijo_der;
+			}
+	}else {
+		if ((pos_hijo_der < cant_elem) && (cmp(vector[pos_mayor],vector[pos_hijo_der]) < 0)) {
+	 		pos_mayor = pos_hijo_der;
+		}
 	}
-
-	heapify(vector, cant, cmp);
-
-	for (size_t i = cant-1; i > 0; i--) {
-		swap(vector, 0, i);
-		downheap(vector, i, 0, cmp);
+	if (pos_mayor != pos_actual) {
+		swap_heapsort(vector, pos_actual, pos_mayor);
+		downheap_heapsort(vector, cant_elem, pos_mayor, cmp);
 	}
+}
 
-	for (size_t i = 0; i < cant; i++){
-		void* temp_punt = NULL;
-		vector_obtener(vector, i, &temp_punt);
-		elementos[i] = temp_punt;
+void heapify_heapsort(void* vector[], size_t cant_elem, cmp_func_t cmp) {
+	for (size_t i = (cant_elem/2) - 1; i > 0; i--) {
+		downheap_heapsort(vector, cant_elem, i, cmp);
 	}
+}
 
-	vector_destruir(vector);
+void heap_sort(void* elementos[], size_t cant, cmp_func_t cmp) {
+	heapify_heapsort(elementos, cant, cmp);
+	swap_heapsort(elementos, 0, cant-1);
+    downheap_heapsort(elementos, cant-1, 0, cmp);
+	size_t i;
+	for (i = cant; i > 0; i--) {
+		swap_heapsort(elementos, 0, i-1);
+		cant--;
+		downheap_heapsort(elementos, cant, 0, cmp);
+	}
+    //printf("Elementos sin procesar: %d - Indice actual: %d\n", (int)cant, (int)i);
 }
