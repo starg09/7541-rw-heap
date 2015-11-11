@@ -188,21 +188,12 @@ void downheap_heapsort(void* vector[], size_t cant_elem, size_t pos_actual, cmp_
 	}
 	size_t pos_hijo_izq = pos_actual*2 + 1;
 	size_t pos_hijo_der = pos_actual*2 + 2;
-	size_t pos_mayor;
-	if ((pos_hijo_izq < cant_elem) && (cmp(vector[pos_actual],vector[pos_hijo_izq]) < 0)) {
+	size_t pos_mayor = pos_actual;
+	if ((pos_hijo_izq < cant_elem) && (cmp(vector[pos_mayor],vector[pos_hijo_izq]) < 0)) {
 		pos_mayor = pos_hijo_izq;
 	}
-	else {
-		pos_mayor = pos_actual;
-	}
-	if (pos_mayor == pos_actual) {
-			if ((pos_hijo_der < cant_elem) && (cmp(vector[pos_actual],vector[pos_hijo_der]) < 0)) {
-		 		pos_mayor = pos_hijo_der;
-			}
-	}else {
-		if ((pos_hijo_der < cant_elem) && (cmp(vector[pos_mayor],vector[pos_hijo_der]) < 0)) {
-	 		pos_mayor = pos_hijo_der;
-		}
+	if ((pos_hijo_der < cant_elem) && (cmp(vector[pos_mayor],vector[pos_hijo_der]) < 0)) {
+		pos_mayor = pos_hijo_der;
 	}
 	if (pos_mayor != pos_actual) {
 		swap_heapsort(vector, pos_actual, pos_mayor);
@@ -211,8 +202,8 @@ void downheap_heapsort(void* vector[], size_t cant_elem, size_t pos_actual, cmp_
 }
 
 void heapify_heapsort(void* vector[], size_t cant_elem, cmp_func_t cmp) {
-	for (size_t i = (cant_elem/2) - 1; i > 0; i--) {
-		downheap_heapsort(vector, cant_elem, i, cmp);
+	for (size_t i = (cant_elem/2); i > 0; i--) {
+		downheap_heapsort(vector, cant_elem, i-1, cmp);
 	}
 }
 
