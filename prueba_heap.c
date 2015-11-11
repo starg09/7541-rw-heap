@@ -65,6 +65,10 @@ bool prueba_heapsort_aleatorio_mayor_a_menor(size_t elementos, cmp_func_t cmp){
 	}
     shuffle(lista_a_procesar, elementos);
 	heap_sort((void**)lista_a_procesar, elementos, cmp);
+	for (size_t i = 0; i < elementos; i++){
+		printf("%d vs %d - ", *lista_a_procesar[i], elementos-1-i);
+	}
+	printf("\n");
 	for (size_t i = elementos; i > 0; i--){
 		if (*(int*)lista_a_procesar[i-1] != (int)(elementos-i)) {
 		    free(lista);
@@ -93,6 +97,10 @@ bool prueba_heapsort_aleatorio_menor_a_mayor(size_t elementos, cmp_func_t cmp){
     shuffle(lista_a_procesar, elementos);
 	heap_sort((void**)lista_a_procesar, elementos, cmp);
 	for (size_t i = 0; i < elementos; i++){
+		printf("%d vs %d - ", *lista_a_procesar[i], i);
+	}
+	printf("\n");
+	for (size_t i = 0; i < elementos; i++){
 		if (*(int*)lista_a_procesar[i] != (int)i) {
 		    free(lista);
 		    return false;
@@ -111,13 +119,17 @@ bool prueba_heapsort_ordenado_menor_a_mayor(size_t elementos, cmp_func_t cmp){
 	int* lista_a_procesar[elementos];
 	
 	int* c = lista;
-	for (int i = 0; i < elementos; i++){
-		*c = i;
+	for (size_t i = 0; i < elementos; i++){
+		*c = (int)(i);
 	//	printf("%d = %d | ", (int)(c-lista), (int)*c);
-		lista_a_procesar[i] = c;
+		lista_a_procesar[elementos-1-i] = c;
 		c++;
 	}
 	heap_sort((void**)lista_a_procesar, elementos, cmp);
+	// for (size_t i = 0; i < elementos; i++){
+	// 	printf("%d vs %d - ", *lista_a_procesar[i], i);
+	// }
+	// printf("\n");
 	for (size_t i = 0; i < elementos; i++){
 		if (*(int*)lista_a_procesar[i] != (int)i) {
 		    free(lista);
@@ -144,6 +156,11 @@ bool prueba_heapsort_ordenado_mayor_a_menor(size_t elementos, cmp_func_t cmp){
 		c++;
 	}
 	heap_sort((void**)lista_a_procesar, elementos, cmp);
+	// for (size_t i = 0; i < elementos; i++){
+	// 	printf("%d vs %d - ", *lista_a_procesar[i], elementos-1-i);
+	// }
+	// printf("\n");
+	printf("\n");
 	for (size_t i = 0; i < elementos; i++){
 		if (*(int*)lista_a_procesar[i] != (int)(elementos-1-i)) {
 		    free(lista);

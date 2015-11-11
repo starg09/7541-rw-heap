@@ -218,13 +218,10 @@ void heapify_heapsort(void* vector[], size_t cant_elem, cmp_func_t cmp) {
 
 void heap_sort(void* elementos[], size_t cant, cmp_func_t cmp) {
 	heapify_heapsort(elementos, cant, cmp);
-	swap_heapsort(elementos, 0, cant-1);
-    downheap_heapsort(elementos, cant-1, 0, cmp);
-	size_t i;
-	for (i = cant; i > 0; i--) {
-		swap_heapsort(elementos, 0, i-1);
-		cant--;
-		downheap_heapsort(elementos, cant, 0, cmp);
+
+	for (size_t i = 1; i <= cant; i++) {
+		swap_heapsort(elementos, 0, cant-i);
+		downheap_heapsort(elementos, cant-i, 0, cmp);
 	}
     //printf("Elementos sin procesar: %d - Indice actual: %d\n", (int)cant, (int)i);
 }
